@@ -1,0 +1,43 @@
+<template>
+	<div>
+		<router-link class="btn btn-dark" :to="{ name:'createPost' }">Create Post</router-link>
+	</div>
+    <div v-if="loading" class="spinner-grow text-primary" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+    <div v-else class="col-md-12 mt-2" v-for="post in posts" :key="post.id">
+        <PostsView :post="post" />
+    </div>	
+</template>
+
+<script>
+	import axios from 'axios'
+	import {ref} from 'vue'
+	import PostsView from '@/components/PostsView.vue'
+
+	export default {
+		components: {
+			PostsView
+		},
+
+		setup(){
+			const posts = ref([]);
+			const loading = ref(true);
+
+			function getPosts(){
+				axios
+				.get("https://jsonplaceholder.typicode.com/posts")
+				.then(function(response){
+					posts.value = response.data;
+					loading.value = false;
+				})		
+				.catch(function(error){
+					console.log(error);
+				});
+			}
+			getPosts();
+
+			return { posts, loading }
+		},
+	}
+</script>
